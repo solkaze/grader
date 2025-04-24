@@ -1,4 +1,4 @@
-def run_source(source_path, timeout_sec=5, input_file="input.txt", output_file="actual_output.txt"):
+def run_source(source_path, timeout_sec=5, input_file="input.txt", output_file="actual.txt"):
     import subprocess, pathlib, os
 
     path = pathlib.Path(source_path)
@@ -40,7 +40,7 @@ def run_source(source_path, timeout_sec=5, input_file="input.txt", output_file="
 
     # 実行ファイルは check() で削除するのでここでは削除しない
 
-def check_output(actual_output_file="actual_output.txt", expected_output_file="expected_output.txt", exec_file_to_cleanup=None):
+def check_output(actual_output_file="actual.txt", expected_output_file="output.txt", exec_file_to_cleanup=None):
     import os
 
     try:
@@ -75,14 +75,58 @@ def check_output(actual_output_file="actual_output.txt", expected_output_file="e
         "エラー": None
     }
 
-run_result = run_source("main.c")
+import glob
+import re
 
-if not run_result["成功"]:
-    print(f"エラー: {run_result['エラー']}")
-else:
-    check_result = check_output(run_result["出力ファイル"], "expected_output.txt", run_result.get("実行ファイル"))
-    print(f"判定: {check_result['判定']}")
-    print(f"実行結果: {check_result['実行結果']}")
-    print(f"期待出力: {check_result['期待出力']}")
-    if check_result["エラー"]:
-        print(f"エラー: {check_result['エラー']}")
+def run_all_tests(source_file, testcase_dir="testcase"):
+    input_files = sorted(glob.glob(f"{testcase_dir}/input*.txt"))
+    print(input_files)
+    results = []
+
+    for input_path in input_files:
+        # ファイル名から数字だけを抽出（例：input3.txt → 3）
+        test_id_match = re.search(r"input(\d+)\.txt", input_path)
+        if not test_id_match:
+            continue
+        test_id = test_id_match.group(1)
+
+        expected_path = f"{testcase_dir}/output{test_id}.txt"
+        actual_path   = f"{testcase_dir}/actual{test_id}.txt"
+
+        run_result = run_source(source_file, input_file=input_path, output_file=actual_path)
+
+        if not run_result["成功"]:
+            results.append({
+                "ケース": test_id,
+                "成功": False,
+                "エラー": run_result["エラー"]
+            })
+            continue
+
+        check_result = check_output(actual_path, expected_output_file=expected_path, exec_file_to_cleanup=run_result.get("実行ファイル"))
+
+        results.append({
+            "ケース": test_id,
+            "成功": True,
+            "判定": check_result["判定"],
+            "実行結果": check_result["実行結果"],
+            "期待出力": check_result["期待出力"]
+        })
+
+    return results
+
+
+
+results = run_all_tests("main.c")
+
+for r in results:
+    print(f"[ケース {r['ケース']}]")
+    if not r["成功"]:
+        print(f"  エラー: {r['エラー']}")
+    else:
+        print(f"  判定: {'True' if r['判定'] else 'False'}")
+        if not r["判定"]:
+            print(f"  実行結果:\n{r['実行結果']}")
+            print(f"  期待出力:\n{r['期待出力']}")
+    print()
+
