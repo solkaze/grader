@@ -75,10 +75,10 @@ def check_output(actual_output_file="actual.txt", expected_output_file="output.t
         "エラー": None
     }
 
-import glob
-import re
-
 def run_all_tests(source_file, testcase_dir="testcase"):
+    import glob
+    import re
+
     input_files = sorted(glob.glob(f"{testcase_dir}/input*.txt"))
     print(input_files)
     results = []
