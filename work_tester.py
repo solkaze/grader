@@ -80,7 +80,6 @@ def run_all_tests(source_file, testcase_dir="testcase"):
     import re
 
     input_files = sorted(glob.glob(f"{testcase_dir}/input*.txt"))
-    print(input_files)
     results = []
 
     for input_path in input_files:
@@ -117,7 +116,7 @@ def run_all_tests(source_file, testcase_dir="testcase"):
 
 
 
-results = run_all_tests("main.c")
+results = run_all_tests("main.py")
 
 for r in results:
     print(f"[ケース {r['ケース']}]")
