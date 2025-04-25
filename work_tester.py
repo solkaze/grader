@@ -1,5 +1,7 @@
+import os
+
 def run_source(source_path, timeout_sec=5, input_file="input.txt", output_file="actual.txt"):
-    import subprocess, pathlib, os
+    import subprocess, pathlib
 
     path = pathlib.Path(source_path)
     ext = path.suffix
@@ -41,7 +43,6 @@ def run_source(source_path, timeout_sec=5, input_file="input.txt", output_file="
     # 実行ファイルは check() で削除するのでここでは削除しない
 
 def check_output(actual_output_file="actual.txt", expected_output_file="output.txt", exec_file_to_cleanup=None):
-    import os
 
     try:
         with open(actual_output_file, "r") as actual_f:
@@ -115,8 +116,8 @@ def run_all_tests(source_file, testcase_dir="testcase"):
     return results
 
 
-
-results = run_all_tests("main.py")
+filename = input("file name: ")
+results = run_all_tests(filename)
 
 for r in results:
     print(f"[ケース {r['ケース']}]")
