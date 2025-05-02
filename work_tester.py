@@ -101,6 +101,11 @@ def run_all_tests(source_file, testcase_dir="testcase"):
                 "成功": False,
                 "エラー": run_result["エラー"]
             })
+            print(f"[ケース {test_id}]")
+            print(f"  判定: False")
+            print(f"  エラー: {run_result['エラー']}")
+            print()
+            
             continue
 
         check_result = check_output(actual_path, expected_output_file=expected_path, exec_file_to_cleanup=run_result.get("実行ファイル"))
@@ -112,21 +117,27 @@ def run_all_tests(source_file, testcase_dir="testcase"):
             "実行結果": check_result["実行結果"],
             "期待出力": check_result["期待出力"]
         })
+                # ここでもう出力する
+        print(f"[ケース {test_id}]")
+        print(f"  判定: {'True' if check_result['判定'] else 'False'}")
+        if not check_result["判定"]:
+            print("  diff:")
+            show_diff(check_result["実行結果"], check_result["期待出力"])
+        print()
 
     return results
 
+def show_diff(actual, expected):
+    import difflib
+    diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
+    for line in diff:
+        if line.startswith("+ ") or line.startswith("- "):
+            print(line)
 
-filename = input("file name: ")
-results = run_all_tests(filename)
-
-for r in results:
-    print(f"[ケース {r['ケース']}]")
-    if not r["成功"]:
-        print(f"  エラー: {r['エラー']}")
-    else:
-        print(f"  判定: {'True' if r['判定'] else 'False'}")
-        if not r["判定"]:
-            print(f"  実行結果:\n{r['実行結果']}")
-            print(f"  期待出力:\n{r['期待出力']}")
-    print()
+if __name__ == "__main__":
+    filename = input("file name: ")
+    results = run_all_tests(filename)
+    #判定がTrueの数を数えて点数にする
+    score = sum(1 for result in results if result["判定"])
+    print(f"score: {score}/{len(results)}")
 
