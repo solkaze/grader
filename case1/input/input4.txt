@@ -1,0 +1,24 @@
+10
+a b c d e f g h i j
+20
+abcdefghij
+abcfdeghij
+abcdfeghij
+abcedfghij
+abcdefghki
+zabcdefgij
+abdecfgihj
+abcdefghzi
+bcdefghija
+abcdghfije
+abcdeghfij
+abdecfghij
+abcdefghjj
+abcdefgihj
+zabcdefgij
+abcdefghba
+bcdefghija
+zabcdefghj
+abcfdegjhi
+abdecfghij
+abcdegfhij

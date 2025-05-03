@@ -80,7 +80,7 @@ def run_all_tests(source_file, testcase_dir="testcase"):
     import glob
     import re
 
-    input_files = sorted(glob.glob(f"{testcase_dir}/input*.txt"))
+    input_files = sorted(glob.glob(f"{testcase_dir}/input/input*.txt"))
     results = []
 
     for input_path in input_files:
@@ -90,7 +90,7 @@ def run_all_tests(source_file, testcase_dir="testcase"):
             continue
         test_id = test_id_match.group(1)
 
-        expected_path = f"{testcase_dir}/output{test_id}.txt"
+        expected_path = f"{testcase_dir}/output/output{test_id}.txt"
         actual_path   = f"{testcase_dir}/actual{test_id}.txt"
 
         run_result = run_source(source_file, input_file=input_path, output_file=actual_path)
@@ -99,6 +99,7 @@ def run_all_tests(source_file, testcase_dir="testcase"):
             results.append({
                 "ケース": test_id,
                 "成功": False,
+                "判定": False,
                 "エラー": run_result["エラー"]
             })
             print(f"[ケース {test_id}]")
@@ -121,6 +122,10 @@ def run_all_tests(source_file, testcase_dir="testcase"):
         print(f"[ケース {test_id}]")
         print(f"  判定: {'True' if check_result['判定'] else 'False'}")
         if not check_result["判定"]:
+            print("実行結果:")
+            print(check_result["実行結果"])
+            print("期待出力:")
+            print(check_result["期待出力"])
             print("  diff:")
             show_diff(check_result["実行結果"], check_result["期待出力"])
         print()
@@ -135,8 +140,9 @@ def show_diff(actual, expected):
             print(line)
 
 if __name__ == "__main__":
-    filename = input("file name: ")
-    results = run_all_tests(filename)
+    filename = input("テスト対象ファイル: ")
+    target_file = input("テスト対象問題番号(整数): ")
+    results = run_all_tests(filename, f"case{target_file}")
     #判定がTrueの数を数えて点数にする
     score = sum(1 for result in results if result["判定"])
     print(f"score: {score}/{len(results)}")
